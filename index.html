@@ -16,6 +16,7 @@
 	</style>
 </head>
 <body>
+	<select name="input-stream_constraints" id="deviceSelection"></select>
 	<div id="interactive" class="viewport"></div>
 	<form action="//pesquisa.sephora.com.br" target='_blank' id="barcode-form">
 		<input id="barcode-input" placeholder="Código será inserido automáticamente" type="search" name="q">
@@ -36,6 +37,7 @@
 		                    console.log(err);
 		                    return;
 		                }
+		                App.attachListeners();
 		                Quagga.start();
 		            });
 		        },
@@ -58,6 +60,47 @@
 		        _convertNameToState: function(name) {
 		            return name.replace("_", ".").split("-").reduce(function(result, value) {
 		                return result + value.charAt(0).toUpperCase() + value.substring(1);
+		            });
+		        },
+		        initCameraSelection: function(){
+		            var streamLabel = Quagga.CameraAccess.getActiveStreamLabel();
+
+		            return Quagga.CameraAccess.enumerateVideoDevices()
+		            .then(function(devices) {
+		                function pruneText(text) {
+		                    return text.length > 30 ? text.substr(0, 30) : text;
+		                }
+		                var $deviceSelection = document.getElementById("deviceSelection");
+		                while ($deviceSelection.firstChild) {
+		                    $deviceSelection.removeChild($deviceSelection.firstChild);
+		                }
+		                devices.forEach(function(device) {
+		                    var $option = document.createElement("option");
+		                    $option.value = device.deviceId || device.id;
+		                    $option.appendChild(document.createTextNode(pruneText(device.label || device.deviceId || device.id)));
+		                    $option.selected = streamLabel === device.label;
+		                    $deviceSelection.appendChild($option);
+		                });
+		            });
+		        },
+		        attachListeners: function() {
+		            var self = this;
+
+		            self.initCameraSelection();
+		            $(".controls").on("click", "button.stop", function(e) {
+		                e.preventDefault();
+		                Quagga.stop();
+		            });
+
+		            $("body").on("change", "input, select", function(e) {
+		                e.preventDefault();
+		                var $target = $(e.target),
+		                    value = $target.attr("type") === "checkbox" ? $target.prop("checked") : $target.val(),
+		                    name = $target.attr("name"),
+		                    state = self._convertNameToState(name);
+
+		                console.log("Value of "+ state + " changed to " + value);
+		                self.setState(state, value);
 		            });
 		        },
 		        setState: function(path, value) {
