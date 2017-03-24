@@ -7,6 +7,9 @@
 		#interactive {
 			 position: relative;
 		}
+		#interactive * {
+			width: 100%;
+		}
 		#interactive canvas {
 			position: absolute;
 			top: 0;
@@ -14,11 +17,13 @@
 			z-index: 99999;
 		}
 	</style>
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0">
 </head>
 <body>
+	<p>Selecione a camera:</p>
 	<select name="input-stream_constraints" id="deviceSelection"></select>
 	<div id="interactive" class="viewport"></div>
-	<form action="//pesquisa.sephora.com.br" target='_blank' id="barcode-form">
+	<form action="//m.sephora.com.br/busca" target='_blank' id="barcode-form">
 		<input id="barcode-input" placeholder="Código será inserido automáticamente" type="search" name="q">
 		<button type="submit">Buscar</button>
 	</form>
