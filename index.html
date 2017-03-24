@@ -218,9 +218,13 @@
 		    Quagga.onDetected(function(result) {
 		        var code = result.codeResult.code;
 
-		        document.getElementById('barcode-input').value = code;
+		        if (App.lasResult !== code) {
+		        	App.lasResult = code;
 
-		        $('ul').append('<li>'+code+'</li>')
+			        document.getElementById('barcode-input').value = code;
+			        $('ul').append('<li>'+code+'</li>')
+		        }
+
 		    });
 		});
 	</script>
